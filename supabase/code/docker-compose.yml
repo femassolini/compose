@@ -15,7 +15,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 768M
     healthcheck:
       test:
         [
@@ -59,7 +59,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 768M
     volumes:
       # https://github.com/supabase/supabase/issues/12661
       - ./volumes/api/kong.yml:/home/kong/temp.yml:ro,z
@@ -88,7 +88,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 768M
     healthcheck:
       test:
         [
@@ -174,7 +174,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 768M
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -199,7 +199,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 768M
     networks:
       default:
         aliases:
@@ -251,7 +251,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 768M
     volumes:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
@@ -297,7 +297,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128M
+          memory: 256M
     volumes:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
@@ -317,7 +317,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 768M
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -338,7 +338,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 768M
     volumes:
       - ./volumes/functions:/home/deno/functions:Z
     depends_on:
@@ -396,7 +396,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 768M
 
   db:
     image: supabase/postgres:15.8.1.060
@@ -427,7 +427,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 1536M
     environment:
       POSTGRES_HOST: /var/run/postgresql
       PGPORT: ${POSTGRES_PORT}
@@ -454,7 +454,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 768M
     volumes:
       - ./volumes/pooler/pooler.exs:/etc/pooler/pooler.exs:ro,z
     healthcheck:
