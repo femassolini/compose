@@ -157,6 +157,12 @@ services:
   rest:
     image: postgrest/postgrest:v12.2.12
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/3000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     deploy:
       resources:
         limits:
@@ -315,6 +321,12 @@ services:
   functions:
     image: supabase/edge-runtime:v1.67.4
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/9000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     deploy:
       resources:
         limits:
