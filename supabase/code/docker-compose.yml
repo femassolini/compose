@@ -176,9 +176,14 @@ services:
     command: [ "postgrest" ]
 
   realtime:
-    # This container name looks inconsistent but is correct because realtime constructs tenant id by parsing the subdomain
+    # Realtime constructs tenant id by parsing the subdomain; kong.yml points to
+    # realtime-dev.supabase-realtime (was the container_name, removed for Easypanel)
     image: supabase/realtime:v2.34.47
     restart: unless-stopped
+    networks:
+      default:
+        aliases:
+          - realtime-dev.supabase-realtime
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
