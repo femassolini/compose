@@ -157,8 +157,9 @@ services:
   rest:
     image: postgrest/postgrest:v12.2.12
     restart: unless-stopped
+    # image is scratch-based (no shell/curl); --version is the only probe available
     healthcheck:
-      test: [ "CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/3000" ]
+      test: [ "CMD", "postgrest", "--version" ]
       interval: 10s
       timeout: 5s
       retries: 3
