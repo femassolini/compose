@@ -12,6 +12,10 @@ services:
   studio:
     image: supabase/studio:2025.05.19-sha-3487831
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     healthcheck:
       test:
         [
@@ -52,6 +56,10 @@ services:
   kong:
     image: kong:2.8.1
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     volumes:
       # https://github.com/supabase/supabase/issues/12661
       - ./volumes/api/kong.yml:/home/kong/temp.yml:ro,z
@@ -77,6 +85,10 @@ services:
   auth:
     image: supabase/gotrue:v2.172.1
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     healthcheck:
       test:
         [
@@ -159,6 +171,10 @@ services:
   rest:
     image: postgrest/postgrest:v12.2.12
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -180,6 +196,10 @@ services:
     # realtime-dev.supabase-realtime (was the container_name, removed for Easypanel)
     image: supabase/realtime:v2.34.47
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     networks:
       default:
         aliases:
@@ -228,6 +248,10 @@ services:
   storage:
     image: supabase/storage-api:v1.22.17
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     volumes:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
@@ -270,6 +294,10 @@ services:
   imgproxy:
     image: darthsim/imgproxy:v3.8.0
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
     volumes:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
@@ -286,6 +314,10 @@ services:
   meta:
     image: supabase/postgres-meta:v0.89.0
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -303,6 +335,10 @@ services:
   functions:
     image: supabase/edge-runtime:v1.67.4
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     volumes:
       - ./volumes/functions:/home/deno/functions:Z
     depends_on:
@@ -352,12 +388,16 @@ services:
       # Comment variables to use Big Query backend for analytics
       POSTGRES_BACKEND_URL: postgresql://supabase_admin:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/_supabase
       POSTGRES_BACKEND_SCHEMA: _analytics
-      LOGFLARE_FEATURE_FLAG_OVERRIDE: multibackend=true
+      LOGFLARE_FEATURE_FLAG_OVERRIDE: "multibackend=true,sentry_enabled=false"
+      DATADOG_API_KEY: ""
       # Uncomment to use Big Query backend for analytics
       # GOOGLE_PROJECT_ID: ${GOOGLE_PROJECT_ID}
       # GOOGLE_PROJECT_NUMBER: ${GOOGLE_PROJECT_NUMBER}
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
-      # Comment out everything below this point if you are using an external Postgres database
   db:
     image: supabase/postgres:15.8.1.060
     restart: unless-stopped
@@ -384,9 +424,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    depends_on:
-      vector:
-        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1G
     environment:
       POSTGRES_HOST: /var/run/postgresql
       PGPORT: ${POSTGRES_PORT}
@@ -406,35 +447,14 @@ services:
         "log_min_messages=fatal" # prevents Realtime polling queries from appearing in logs
       ]
 
-  vector:
-    image: timberio/vector:0.28.1-alpine
-    restart: unless-stopped
-    volumes:
-      - ./volumes/logs/vector.yml:/etc/vector/vector.yml:ro,z
-      - ${DOCKER_SOCKET_LOCATION}:/var/run/docker.sock:ro,z
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://vector:9001/health"
-        ]
-      timeout: 5s
-      interval: 5s
-      retries: 3
-    environment:
-      LOGFLARE_API_KEY: ${LOGFLARE_API_KEY}
-    command: [ "--config", "/etc/vector/vector.yml" ]
-    security_opt:
-      - "label=disable"
-
   # Update the DATABASE_URL if you are using an external Postgres database
   supavisor:
     image: supabase/supavisor:2.5.1
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     volumes:
       - ./volumes/pooler/pooler.exs:/etc/pooler/pooler.exs:ro,z
     healthcheck:
