@@ -34,6 +34,15 @@ basicauth_credentials:
 ### API Routes
 ###
 services:
+  ## Open health check (no auth) - for Easypanel / uptime probes
+  - name: health-open
+    url: http://auth:9999/health
+    routes:
+      - name: health-open
+        strip_path: true
+        paths:
+          - /health
+
   ## Open Auth routes
   - name: auth-v1-open
     url: http://auth:9999/verify
