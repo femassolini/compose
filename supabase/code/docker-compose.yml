@@ -348,6 +348,12 @@ services:
   db:
     image: supabase/postgres:15.8.1.060
     restart: unless-stopped
+    ports:
+      # Publica o Postgres na host (a porta interna continua 5432)
+      # Controláveis pela aba Environment:
+      #   DB_BIND_IP  - interface a ouvir (127.0.0.1 = nada externo, 172.17.0.1 = só containers, 0.0.0.0 = internet)
+      #   DB_PORT     - porta externa
+      - "${DB_BIND_IP:-127.0.0.1}:${DB_PORT:-54329}:5432"
     volumes:
       - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
       # Must be superuser to create event trigger
